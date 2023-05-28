@@ -4,9 +4,8 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#3498db" />
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
-    <meta property="og:title" content="profesords funbook" />
+
+    <meta property="og:title" content="funbook" />
     <meta property="og:description" content="project learning-x funbook" />
     <meta property="og:image" content="{{ url_for('static', filename='ogimage.jpg') }}" />
 
@@ -14,21 +13,21 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet" />
+    <title>Fan Book</title>
 
-    <title>Bucket List</title>
-
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;600;700;900&display=swap" rel="stylesheet" />
     <style>
       * {
-        font-family: "Gowun Dodum", sans-serif;
+        font-family: "Noto Serif KR", serif;
       }
+
       .mypic {
         width: 100%;
-        height: 200px;
+        height: 300px;
 
         background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-          url("https://images.unsplash.com/photo-1601024445121-e5b82f020549?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1189&q=80");
-        background-position: center;
+          url("https://images.chosun.com/resizer/iksb_GxiHITk5APwQXOhvaiKYTc=/616x0/smart/cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/MEDK65WNXBHK5OR7CXLNJXPMZA.jpg");
+        background-position: center 30%;
         background-size: cover;
 
         color: white;
@@ -38,135 +37,197 @@
         align-items: center;
         justify-content: center;
       }
-      .mypic > h1 {
-        font-size: 30px;
-      }
-      .mybox {
+
+      .mypost {
         width: 95%;
-        max-width: 700px;
+        max-width: 500px;
+        margin: 20px auto 20px auto;
+
+        box-shadow: 0px 0px 3px 0px black;
         padding: 20px;
-        box-shadow: 0px 0px 10px 0px lightblue;
-        margin: 20px auto;
-      }
-      .mybucket {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
       }
 
-      .mybucket > input {
-        width: 70%;
+      .mypost > button {
+        margin-top: 15px;
       }
-      .mybox > li {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
 
+      .mycards {
+        width: 95%;
+        max-width: 500px;
+        margin: auto;
+      }
+
+      .mycards > .card {
+        margin-top: 10px;
         margin-bottom: 10px;
-        min-height: 48px;
-      }
-      .mybox > li > h2 {
-        max-width: 75%;
-        font-size: 20px;
-        font-weight: 500;
-        margin-right: auto;
-        margin-bottom: 0px;
-      }
-      .mybox > li > h2.done {
-        text-decoration: line-through;
       }
 
-      .mybox > li > .btn {
-        margin-left: 1%;
+      .footer-fot {
+        background-color: #1a1a1a;
+        color: #fff;
+        padding: 50px 0;
+        margin-top: 100px;
+      }
+
+      .footer-box {
+        margin-bottom: 30px;
+      }
+
+      .footer-text {
+        margin-top: 15px;
+      }
+
+      .footer-heading {
+        font-size: 24px;
+        margin-bottom: 30px;
+      }
+
+      .footer-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .footer-list li {
+        margin-bottom: 10px;
+      }
+
+      .footer-list a {
+        color: #fff;
+      }
+
+      .footer-list a:hover {
+        color: #f1c40f;
+      }
+
+      .fa {
+        margin-right: 10px;
+      }
+
+      hr {
+        border-color: #fff;
+        margin-top: 50px;
+        margin-bottom: 50px;
       }
     </style>
+  </head>
+
+  <body>
+
+    <div class="mypic">
+      <h1>BTS FunBook</h1>
+      <p>Current Temperature: <span id="temp">36</span>degrees</p>
+    </div>
+    <div class="mypost">
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="name" placeholder="url" />
+        <label for="floatingInput">Nickname</label>
+      </div>
+      <div class="form-floating">
+        <textarea class="form-control" placeholder="Leave a comment here" id="comment" style="height: 100px"></textarea>
+        <label for="floatingTextarea2">Comment</label>
+      </div>
+      <button onclick="saveComment()" type="button" class="btn btn-dark">Save</button>
+    </div>
+    <div class="mycards" id="comment-list"></div>
+
     <script>
       $(document).ready(function () {
-        show_bucket();
+        set_temp();
+        show_comment();
       });
-
-      function show_bucket() {
-        $("#bucket-list").empty();
+      function set_temp() {
         $.ajax({
           type: "GET",
-          url: "/bucket",
+          url: "http://spartacodingclub.shop/sparta_api/weather/seoul",
           data: {},
           success: function (response) {
-            let rows = response["buckets"];
-            for (let i = 0; i < rows.length; i++) {
-              let bucket = rows[i]["bucket"];
-              let num = rows[i]["num"];
-              let done = rows[i]["done"];
-
-              let temp_html = "";
-              if (done === 0) {
-                temp_html = `<li>
-                                <h2>✅ ${bucket}</h2>
-                                <button onclick="done_bucket(${num})" type="button" class="btn btn-outline-primary">Done!</button>
-                                <button onclick="del_bucket(${num})" type="button" class="btn btn-danger">Delete</button>
-                                </li>`;
-              } else {
-                temp_html = `<li>
-                  <h2 class="done">✅ ${bucket}</h2>
-                  <button onclick="del_bucket(${num})" type="button" class="btn btn-danger">Delete</button>
-                              </li>`;
-              }
-              $("#bucket-list").append(temp_html);
-            }
+            $("#temp").text(response["temp"]);
           },
         });
       }
 
-      function save_bucket() {
-        let bucket = $("#bucket").val();
+      function show_comment() {
         $.ajax({
-          type: "POST",
-          url: "/bucket",
-          data: { bucket_give: bucket },
+          type: "GET",
+          url: "/homework",
+          data: {},
           success: function (response) {
-            alert(response["msg"]);
-            window.location.reload();
-          },
-        });
+            let datas = response.message;
+            datas.forEach((data) => {
+              let temp_html = `
+              <div class="card">
+                <div class="card-body">
+                  <blockquote class="blockquote mb-0">
+                    <p>${data.comment}</p>
+                    <footer class="blockquote-footer">${data.name}</footer>
+                  </blockquote>
+                </div>
+              </div>`;
+              $("#comment-list").append(temp_html);
+            }); //end loop
+          }, //end success
+        }); //end ajax
       }
 
-      function done_bucket(num) {
-        $.ajax({
-          type: "POST",
-          url: "/bucket/done",
-          data: { num_give: num },
-          success: function (response) {
-            alert(response["msg"]);
-            window.location.reload();
-          },
-        });
-      }
+      const saveComment = () => {
+        function encodeHTML(str) {
+          return str.replace(/[&<>"']/g, function (match) {
+            return {
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            }[match];
+          });
+        }
 
-      function del_bucket(num) {
-        $.ajax({
-          type: "POST",
-          url: "/bucket/del",
-          data: { num_give: num },
-          success: function (response) {
-            alert(response["msg"]);
-            window.location.reload();
-          },
-        });
-      }
+        function stripHTMLTags(str) {
+          return str.replace(/(<([^>]+)>)/gi, "");
+        }
+
+        let name = $("#name").val();
+        let comment = $("#comment").val();
+
+        if (name.toLowerCase() == "del" || comment.toLowerCase() == "del") {
+          $.ajax({
+            type: "GET",
+            data: {},
+            url: "/delete_all",
+            success: (response) => {
+              alert(response["msg"]);
+              window.location.reload();
+            },
+          });
+        } else if (name == "" || comment == "") {
+          alert("silahkan masukan nama dan komentar!");
+          return;
+        } else {
+          $.ajax({
+            type: "POST",
+            url: "/homework",
+            data: { name_give: name, comment_give: comment },
+            success: (response) => {
+              alert(response["msg"]);
+              // Clear the comment input fields
+              $("#name").val("");
+              $("#comment").val("");
+              // Append the new comment to the comment list
+              let temp_html = `
+              <div class="card">
+                <div class="card-body">
+                  <blockquote class="blockquote mb-0">
+                    <p>${encodeHTML(comment)}</p>
+                    <footer class="blockquote-footer">${encodeHTML(name)}</footer>
+                  </blockquote>
+                </div>
+              </div>`;
+              $("#comment-list").append(temp_html);
+            }, // end success
+          }); // end ajax
+        }
+      };
     </script>
-  </head>
-  <body>
-    <div class="mypic">
-      <h1>My Bucketlist</h1>
-    </div>
-    <div class="mybox">
-      <div class="mybucket">
-        <input id="bucket" class="form-control" type="text" placeholder="Enter your bucket list item here" />
-        <button onclick="save_bucket()" type="button" class="btn btn-outline-primary">Save</button>
-      </div>
-    </div>
-    <div class="mybox" id="bucket-list"></div>
   </body>
 </html>
